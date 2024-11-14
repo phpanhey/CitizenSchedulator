@@ -1,12 +1,13 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/anaskhan96/soup"
 )
@@ -14,25 +15,41 @@ import (
 func main() {
 	url := "https://www.service.bremen.de/dienstleistungen/reisepass-beantragen-fuer-personen-unter-18-jahren-126498"
 	urlContent := getUrlContent(url)
+	// a very high nextAvailableAppointmentDate to make sure the parser gets the next nextAvailableAppointmentDate
+	nextAvailableAppointmentDate := ParseTimeStamp(CleanDate("Do. 05.12.30 um 10:00"))
 
-	doc := soup.HTMLParse(strings.Split(urlContent, "Frühestmöglicher Termin in Bremen:")[1])
-	links := doc.FindAll("a")
+	parts := strings.Split(urlContent, "Frühestmöglicher Termin in Bremen:")
+	if len(parts) > 1 {
+		doc := soup.HTMLParse(strings.Split(urlContent, "Frühestmöglicher Termin in Bremen:")[1])
+		links := doc.FindAll("a")
+		nextAvailableAppointmentDate = ParseTimeStamp(CleanDate(links[0].Text()))
+	}
 
-	m := make(map[string]string)
-	m["date"] = links[0].Text()
-	m["link"] = links[0].Attrs()["href"]
+	if nextAvailableAppointmentDate.Before(TimeFromFile("date.txt")) {
+		fmt.Println("Next available appointment: ", nextAvailableAppointmentDate)
 
-	f, err := os.Create("test.txt")
+	}
+
+}
+
+func ParseTimeStamp(date string) time.Time {
+	timeStamp, err := time.Parse("02.01.06 um 15:04", date)
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := json.Marshal(m)
+	return timeStamp
+}
+
+func TimeFromFile(s string) time.Time {
+	content, err := os.ReadFile(s)
 	if err != nil {
 		log.Fatal(err)
 	}
+	return ParseTimeStamp(string(content))
+}
 
-	_, err = f.WriteString(string(res))
-
+func CleanDate(date string) string {
+	return strings.TrimSpace(date[4:])
 }
 
 func getUrlContent(link string) string {
