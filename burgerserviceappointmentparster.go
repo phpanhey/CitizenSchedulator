@@ -5,13 +5,19 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/anaskhan96/soup"
 )
 
 func main() {
-	url := "https://www.service.bremen.de/dienstleistungen/reisepass-beantragen-fuer-personen-unter-18-jahren-126498"
+
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: myprogram <URL>")
+		return
+	}
+	url := os.Args[1]
 	urlContent := getUrlContent(url)
 
 	parts := strings.Split(urlContent, "Frühestmöglicher Termin in Bremen:")
@@ -21,6 +27,7 @@ func main() {
 
 		nextAvailableAppointmentDate := CleanDate(links[0].Text())
 		fmt.Println("Next available appointment date: ", nextAvailableAppointmentDate)
+		fmt.Println("Link to appointment: ", url)
 	}
 }
 
