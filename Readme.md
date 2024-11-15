@@ -1,7 +1,3 @@
-Here’s the updated README without the "How It Works" section:
-
----
-
 # CitizenSchedulator
 
 CitizenSchedulator is a Go-based application designed to help users find the next available appointment for various municipal services in Bremen, Germany. It fetches the earliest appointment date from a specified service URL and can integrate with notification systems for real-time updates.
