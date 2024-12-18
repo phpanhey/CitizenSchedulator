@@ -36,22 +36,6 @@ func main() {
 	}
 }
 
-func saveFileContent(s, nextAvailableAppointmentDate string) {
-	err := os.WriteFile(s, []byte(nextAvailableAppointmentDate), 0644)
-	if err != nil {
-		// create file and write a nextAvailableAppointmentDate in far future to it.
-		if err = os.WriteFile(s, []byte("24.03.60  08:15"), 0644); err != nil {
-			log.Fatal(err)
-		}
-	}
-}
-
-func CleanDate(date string) string {
-	// also get rid of "um" in string
-	date = strings.Replace(date, "um", "", -1)
-	return strings.TrimSpace(date[4:])
-}
-
 func getUrlContent(link string) string {
 	res, err := http.Get(link)
 	if err != nil {
@@ -65,10 +49,26 @@ func getUrlContent(link string) string {
 	return string(content)
 }
 
+func CleanDate(date string) string {
+	// also get rid of "um" in string
+	date = strings.Replace(date, "um", "", -1)
+	return strings.TrimSpace(date[4:])
+}
+
 func retrieveFileContent(filename string) string {
 	content, err := os.ReadFile(filename)
 	if err != nil {
 		return ""
 	}
 	return string(content)
+}
+
+func saveFileContent(s, nextAvailableAppointmentDate string) {
+	err := os.WriteFile(s, []byte(nextAvailableAppointmentDate), 0644)
+	if err != nil {
+		// create file and write a nextAvailableAppointmentDate in far future to it.
+		if err = os.WriteFile(s, []byte("24.03.60  08:15"), 0644); err != nil {
+			log.Fatal(err)
+		}
+	}
 }
