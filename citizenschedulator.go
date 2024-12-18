@@ -17,6 +17,7 @@ func main() {
 		fmt.Println("Usage: myprogram <URL>")
 		return
 	}
+
 	url := os.Args[1]
 	urlContent := getUrlContent(url)
 
@@ -26,8 +27,22 @@ func main() {
 		links := doc.FindAll("a")
 
 		nextAvailableAppointmentDate := CleanDate(links[0].Text())
-		fmt.Println("Next available appointment date: ", nextAvailableAppointmentDate)
-		fmt.Println("Link to appointment: ", url)
+		fileContent := retrieveFileContent("date.txt")
+		if fileContent != nextAvailableAppointmentDate {
+			fmt.Println("Next available appointment date: ", nextAvailableAppointmentDate)
+			fmt.Println("Link to appointment: ", url)
+			saveFileContent("date.txt", nextAvailableAppointmentDate)
+		}
+	}
+}
+
+func saveFileContent(s, nextAvailableAppointmentDate string) {
+	err := os.WriteFile(s, []byte(nextAvailableAppointmentDate), 0644)
+	if err != nil {
+		// create file and write a nextAvailableAppointmentDate in far future to it.
+		if err = os.WriteFile(s, []byte("24.03.60  08:15"), 0644); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
@@ -46,6 +61,14 @@ func getUrlContent(link string) string {
 	res.Body.Close()
 	if err != nil {
 		log.Fatal(err)
+	}
+	return string(content)
+}
+
+func retrieveFileContent(filename string) string {
+	content, err := os.ReadFile(filename)
+	if err != nil {
+		return ""
 	}
 	return string(content)
 }
