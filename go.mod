@@ -1,4 +1,4 @@
-module burgerserviceappointmentparster
+module citizenschedulator
 
 go 1.22.0
 
