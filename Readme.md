@@ -46,13 +46,13 @@ Next available appointment date: DD.MM.YYYY
 ### Piping Output to Telegram Notifier
 Integrate with [Telegram Notifier](https://github.com/phpanhey/telegram_notify) to receive notifications:
 ```bash
-./citizenschedulator <service_url> | python3 telegram_notify.py --message "$(cat -)" --telegram_bot_token "<your_bot_token>" --telegram_user_id "<your_user_id>"
+python3 telegram_notify.py --message "$(./citizenschedulator <service_url>)" --telegram_bot_token "<your_bot_token>" --telegram_user_id "<your_user_id>"
 ```
 
 ### Scheduled Runs with CronTab
 Automate periodic checks using CronTab. For example, to run the script hourly:
 ```bash
-0 * * * * /path/to/citizenschedulator <service_url> | python3 /path/to/telegram_notify.py --message "$(cat -)" --telegram_bot_token "<your_bot_token>" --telegram_user_id "<your_user_id>"
+0 * * * * cd /path/to/CitizenSchedulator; python3 /path/to/telegram_notify.py --message "$(./citizenschedulator <service_url>)" --telegram_bot_token "<your_bot_token>" --telegram_user_id "<your_user_id>"; cd;
 ```
 Replace `/path/to/` with the actual script paths and `<service_url>` with the service URL.
 
